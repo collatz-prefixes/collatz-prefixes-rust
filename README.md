@@ -1,2 +1,3 @@
-# collatz-prefixes-rust
+# Collatz Prefixes
+
 Rust implementation of Collatz Prefixes
