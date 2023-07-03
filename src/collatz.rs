@@ -97,15 +97,17 @@ pub fn ecf_to_n(ecf: Vec<u32>) -> BigUint {
         ans = (ans - BigUint::one()) / 3.to_biguint().unwrap();
     }
 
-    return ans;
+    return ans << ecf[0];
 }
 
 #[cfg(test)]
 mod tests {
-    // brings everything from parent's scope into this scope
     use super::*;
 
-    use common::to_biguints;
+    /// Maps a given list of numbers to list of biguints.
+    fn to_biguints(nums: Vec<u32>) -> Vec<BigUint> {
+        nums.iter().map(|x| x.to_biguint().unwrap()).collect()
+    }
 
     #[test]
     fn test_collatz_sequences() {

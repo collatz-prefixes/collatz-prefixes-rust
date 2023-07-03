@@ -58,10 +58,8 @@ pub fn is_pow2(n: BigUint) -> bool {
 }
 
 mod tests {
-    use num_bigint::ToBigUint;
-
-    // brings everything from parent's scope into this scope
     use super::*;
+    use num_bigint::ToBigUint;
 
     #[test]
     fn test_path() {
