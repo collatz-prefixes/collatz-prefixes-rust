@@ -1,13 +1,15 @@
 use num_bigint::{BigUint, ToBigUint};
+use num_traits::One;
 
-pub fn collatz_length(mut n: BigUint) -> i32 {
-    let mut ans: i32 = 0;
-    while !n.eq(&1.to_biguint().unwrap()) {
+/// fs,dndf
+pub fn length(mut n: BigUint) -> u32 {
+    let mut ans: u32 = 0;
+    while !n.eq(&BigUint::one()) {
         ans += 1;
-        if !n.bit(0) {
-            n >>= 1;
+        if n.bit(0) {
+            n = 3.to_biguint().unwrap() * n + BigUint::one();
         } else {
-            n = 3.to_biguint().unwrap() * n + 1.to_biguint().unwrap();
+            n >>= 1;
         }
     }
     ans + 1
@@ -15,12 +17,11 @@ pub fn collatz_length(mut n: BigUint) -> i32 {
 
 #[cfg(test)]
 mod tests {
+    use crate::collatz;
     use num_bigint::ToBigUint;
 
-    use crate::collatz::collatz_length;
-
     #[test]
-    fn it_works() {
-        assert_eq!(collatz_length(5.to_biguint().unwrap()), 6);
+    fn collatz_sequences() {
+        assert_eq!(collatz::length(5.to_biguint().unwrap()), 6);
     }
 }
