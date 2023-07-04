@@ -7,11 +7,7 @@
 
 ## Usage
 
-Run main with:
-
-```sh
-cargo run --release
-```
+CLI in progress.
 
 ## Test
 
