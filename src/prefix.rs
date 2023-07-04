@@ -23,8 +23,8 @@ pub fn find(mut n: BigUint, mut m: BigUint) -> Vec<u32> {
         } else if n.bit(0) && m.bit(0) {
             // both are odd
             ans.push(twos);
-            n = three_x_plus_one(n);
-            m = three_x_plus_one(m);
+            n = three_x_plus_one(&n);
+            m = three_x_plus_one(&m);
         } else {
             break;
         }
@@ -36,8 +36,8 @@ pub fn find(mut n: BigUint, mut m: BigUint) -> Vec<u32> {
 /// Iterates a number through a prefix.
 ///
 /// If the prefix is equal to ECF of the number, the result is expected to be 1.
-pub fn iterate(mut n: BigUint, pf: Vec<u32>) -> BigUint {
-    if pf.len() == 0 {
+pub fn iterate(mut n: BigUint, pf: &Vec<u32>) -> BigUint {
+    if pf.is_empty() {
         return n;
     } else {
         // R_0 function
@@ -45,7 +45,7 @@ pub fn iterate(mut n: BigUint, pf: Vec<u32>) -> BigUint {
 
         // R function for i = 1..len(pf)
         for i in 1..pf.len() {
-            n = three_x_plus_one(n);
+            n = three_x_plus_one(&n);
             n /= BigUint::one() << (pf[i] - pf[i - 1]);
         }
 
@@ -75,7 +75,7 @@ pub fn from_num(mut k: BigUint) -> Vec<u32> {
     return ans;
 }
 
-/// Add two prefixes.
+/// Add two prefixes. Does not mutate the input, returns a new vector.
 ///
 /// This is done by "attaching" prefixes together.
 ///
@@ -85,13 +85,13 @@ pub fn from_num(mut k: BigUint) -> Vec<u32> {
 ///	 +---------------------------
 ///		sum: [a, b, x+c, y+c, z+c]
 ///```
-pub fn add(pf1: Vec<u32>, pf2: Vec<u32>) -> Vec<u32> {
+pub fn add(pf1: &Vec<u32>, pf2: &Vec<u32>) -> Vec<u32> {
     // edge cases
-    if pf1.len() == 0 {
-        return pf2;
+    if pf1.is_empty() {
+        return pf2.to_vec();
     }
-    if pf2.len() == 0 {
-        return pf1;
+    if pf2.is_empty() {
+        return pf1.to_vec();
     }
 
     let last = pf1[pf1.len() - 1];
@@ -102,9 +102,10 @@ pub fn add(pf1: Vec<u32>, pf2: Vec<u32>) -> Vec<u32> {
         ans.push(pf2[i] + last);
     }
 
-    return ans;
+    ans
 }
 
+#[cfg(test)]
 mod tests {
     use super::*;
     use crate::collatz;
@@ -165,12 +166,12 @@ mod tests {
 
             // test both numbers for ECF iteration
             assert_eq!(
-                iterate(case.n, ecf_n),
+                iterate(case.n, &ecf_n),
                 BigUint::one(),
                 "Iterating over ECF should result in 1."
             );
             assert_eq!(
-                iterate(case.m, ecf_m),
+                iterate(case.m, &ecf_m),
                 BigUint::one(),
                 "Iterating over ECF should result in 1."
             );
@@ -214,7 +215,7 @@ mod tests {
             },
         ];
         for case in cases {
-            assert_eq!(add(case.pf1, case.pf2), case.ans, "Wrong result.");
+            assert_eq!(add(&case.pf1, &case.pf2), case.ans, "Wrong result.");
         }
     }
 

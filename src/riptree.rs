@@ -10,28 +10,29 @@ use crate::{
 ///
 /// The path is also given, as `n` can be in different paths (see path extension).
 #[inline]
-pub fn next_in_path(n: BigUint, p: Vec<bool>) -> BigUint {
+pub fn next_in_path(n: BigUint, p: &Vec<bool>) -> BigUint {
     n + (BigUint::one() << p.len())
 }
 
 // Finds the prefix of a number, or a number at the given path.
 //
 // If you only care about the number, simply pass NTOP(n) as the path.
-pub fn prefix_find(mut n: BigUint, p: Vec<bool>) -> Vec<u32> {
-    assert_eq!(pton(p.clone()), n, "Number must be at this path.");
+pub fn prefix_find(mut n: BigUint, p: &Vec<bool>) -> Vec<u32> {
+    assert_eq!(pton(p), n, "Number must be at this path.");
 
-    if is_pow2(n.clone()) {
+    if is_pow2(&n) {
         let mut ans = 0;
         while n > BigUint::one() {
             n >>= 1;
             ans += 1;
         }
-        return vec![ans];
+        vec![ans]
     } else {
         prefix::find(n.clone(), next_in_path(n, p))
     }
 }
 
+#[cfg(test)]
 mod tests {
     use super::*;
     use crate::utils::ntop;
@@ -85,11 +86,11 @@ mod tests {
             },
         ];
         for case in cases {
-            let pf = prefix_find(case.n.clone(), ntop(case.n.clone()));
+            let pf = prefix_find(case.n.clone(), &ntop(&case.n));
 
             assert_eq!(pf, case.pf, "Wrong prefix.");
             assert!(
-                prefix::iterate(case.n, pf).bit(0),
+                prefix::iterate(case.n, &pf).bit(0),
                 "Result of prefix iteration should be odd..",
             );
         }
@@ -125,7 +126,7 @@ mod tests {
         ];
         for case in cases {
             assert_eq!(
-                next_in_path(case.n.clone(), ntop(case.n)),
+                next_in_path(case.n.clone(), &ntop(&case.n)),
                 case.k,
                 "Wrong number at next in path."
             );

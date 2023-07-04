@@ -8,8 +8,12 @@ use num_traits::{One, Zero};
 /// 3. Reverse array
 /// 4. Flip bits
 #[inline]
-pub fn ntop(n: BigUint) -> Vec<bool> {
-    ntob(n - BigUint::one()).iter().rev().map(|b| !b).collect()
+pub fn ntop(n: &BigUint) -> Vec<bool> {
+    ntob(&(n.clone() - BigUint::one()))
+        .iter()
+        .rev()
+        .map(|b| !b)
+        .collect()
 }
 
 /// Finds the number from a path.
@@ -19,15 +23,15 @@ pub fn ntop(n: BigUint) -> Vec<bool> {
 /// 3. Convert to decimal
 /// 4. Increment
 #[inline]
-pub fn pton(p: Vec<bool>) -> BigUint {
-    bton(p.into_iter().map(|b| !b).rev().collect()) + BigUint::one()
+pub fn pton(p: &Vec<bool>) -> BigUint {
+    bton(&p.into_iter().map(|b| !b).rev().collect()) + BigUint::one()
 }
 
 /// Given a binary representation in bools, compute the corresponding number.
-pub fn bton(b: Vec<bool>) -> BigUint {
+pub fn bton(b: &Vec<bool>) -> BigUint {
     BigUint::from_radix_be(
         b.into_iter()
-            .map(|b| if b { 1 } else { 0 })
+            .map(|b| if *b { 1 } else { 0 })
             .collect::<Vec<u8>>()
             .as_slice(),
         2,
@@ -42,8 +46,8 @@ pub fn bton(b: Vec<bool>) -> BigUint {
 ///
 /// - `0` corresponds to `false`
 /// - `1` corresponds to `true`
-pub fn ntob(n: BigUint) -> Vec<bool> {
-    if n == BigUint::zero() {
+pub fn ntob(n: &BigUint) -> Vec<bool> {
+    if *n == BigUint::zero() {
         vec![]
     } else {
         n.to_radix_be(2).into_iter().map(|b| b == 1).collect()
@@ -51,14 +55,15 @@ pub fn ntob(n: BigUint) -> Vec<bool> {
 }
 
 /// Returns `true` if the number is a power of two.
-pub fn is_pow2(n: BigUint) -> bool {
-    if n == BigUint::zero() {
+pub fn is_pow2(n: &BigUint) -> bool {
+    if *n == BigUint::zero() {
         true
     } else {
-        n.clone() & (n - BigUint::one()) == BigUint::zero()
+        n & (n - BigUint::one()) == BigUint::zero()
     }
 }
 
+#[cfg(test)]
 mod tests {
     use super::*;
     use num_bigint::ToBigUint;
@@ -81,8 +86,8 @@ mod tests {
             },
         ];
         for case in cases {
-            assert_eq!(ntop(case.n.clone()), case.p, "Wrong path from number.");
-            assert_eq!(pton(case.p), case.n, "Wrong number from path.");
+            assert_eq!(ntop(&case.n), case.p, "Wrong path from number.");
+            assert_eq!(pton(&case.p), case.n, "Wrong number from path.");
         }
     }
 
@@ -112,8 +117,8 @@ mod tests {
             },
         ];
         for case in cases {
-            assert_eq!(ntob(case.n.clone()), case.b, "Wrong binary from number.");
-            assert_eq!(bton(case.b), case.n, "Wrong number from binary.");
+            assert_eq!(ntob(&case.n), case.b, "Wrong binary from number.");
+            assert_eq!(bton(&case.b), case.n, "Wrong number from binary.");
         }
     }
 
@@ -143,8 +148,8 @@ mod tests {
             },
         ];
         for case in cases {
-            assert!(is_pow2(case.yes));
-            assert!(!is_pow2(case.no));
+            assert!(is_pow2(&case.yes));
+            assert!(!is_pow2(&case.no));
         }
     }
 }

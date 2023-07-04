@@ -21,7 +21,7 @@ pub fn length(mut n: BigUint) -> usize {
     while n != BigUint::one() {
         ans += 1;
         if n.bit(0) {
-            n = three_x_plus_one(n)
+            n = three_x_plus_one(&n)
         } else {
             n >>= 1;
         }
@@ -37,7 +37,7 @@ pub fn sequence(mut n: BigUint) -> Vec<BigUint> {
     while n != BigUint::one() {
         ans.push(n.clone());
         if n.bit(0) {
-            n = three_x_plus_one(n)
+            n = three_x_plus_one(&n)
         } else {
             n >>= 1;
         }
@@ -59,7 +59,7 @@ pub fn reduced_sequence(mut n: BigUint) -> Vec<BigUint> {
     while n != BigUint::one() {
         if n.bit(0) {
             ans.push(n.clone());
-            n = three_x_plus_one(n);
+            n = three_x_plus_one(&n);
         } else {
             n >>= 1;
         }
@@ -77,7 +77,7 @@ pub fn ecf(mut n: BigUint) -> Vec<u32> {
     while n != BigUint::one() {
         if n.bit(0) {
             ans.push(twos);
-            n = three_x_plus_one(n);
+            n = three_x_plus_one(&n);
         } else {
             twos += 1;
             n >>= 1;
