@@ -23,12 +23,12 @@ pub fn to_path(n: &BigUint) -> Vec<bool> {
 /// 3. Convert to decimal
 /// 4. Increment
 #[inline]
-pub fn from_path(p: &Vec<bool>) -> BigUint {
-    from_binary(&p.iter().map(|b| !b).rev().collect()) + BigUint::one()
+pub fn from_path(p: &[bool]) -> BigUint {
+    from_binary(&p.iter().map(|b| !b).rev().collect::<Vec<bool>>()[..]) + BigUint::one()
 }
 
 /// Given a binary representation in bools, compute the corresponding number.
-pub fn from_binary(b: &Vec<bool>) -> BigUint {
+pub fn from_binary(b: &[bool]) -> BigUint {
     BigUint::from_radix_be(
         b.iter()
             .map(|b| if *b { 1 } else { 0 })

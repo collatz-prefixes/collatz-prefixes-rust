@@ -8,12 +8,15 @@ use crate::{
 
 /// Finds the nature of a path.
 ///
+/// This is done by checking the parity of iterating the number at path `p` with a prefix
+/// derived from [...pf, rpf + 1]
+///
 /// - `true`: result is even, refers to GOOD nature
 /// - `false`: result is odd, refers to BAD nature
 #[inline]
-pub fn find_nature(p: &Vec<bool>, pf: &Vec<u32>, rpf: u32) -> bool {
+pub fn find_nature(p: &[bool], pf: &[u32], rpf: u32) -> bool {
     // check if the result of prefix iteration is even or odd
-    !(prefix::iterate(from_path(p), &[pf.to_vec(), vec![rpf + 1]].concat()).bit(0))
+    !(prefix::iterate(from_path(p), &[pf, &[rpf + 1]].concat()).bit(0))
 }
 
 /// Finds the path from root to the node indexed by p in PIPTree, with the path length of the root node being equal to |p|.
@@ -24,7 +27,7 @@ pub fn find_nature(p: &Vec<bool>, pf: &Vec<u32>, rpf: u32) -> bool {
 /// In the resulting array:
 /// - `true`: right
 /// - `false`: left
-pub fn get_root_directions(p: &Vec<bool>) -> Vec<bool> {
+pub fn get_root_directions(p: &[bool]) -> Vec<bool> {
     let mut ans = vec![];
 
     let mut i = from_binary(p);
