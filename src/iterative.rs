@@ -1,9 +1,10 @@
-use num_bigint::{BigUint, ToBigUint};
+use num_bigint::BigUint;
 use num_traits::One;
 
 use crate::{
     prefix::{add, iterate},
-    utils::ntop,
+    utils::to_path,
+    CollatzIteration,
 };
 
 /// Find the ECF by iteratively extending the path until prefix iteration results in 1.
@@ -11,11 +12,12 @@ pub fn path_extension(
     n: BigUint,
     prefix_finder: fn(n: BigUint, p: &Vec<bool>) -> Vec<u32>,
 ) -> Vec<u32> {
-    let mut p = ntop(&n);
+    let mut p = to_path(&n);
     while iterate(n.clone(), &prefix_finder(n.clone(), &p)) != BigUint::one() {
         p.push(true);
     }
-    return prefix_finder(n, &p);
+
+    prefix_finder(n, &p)
 }
 
 /// Find the ECF by iteratively consuming the prefix until the iteration result is 1.
@@ -25,14 +27,14 @@ pub fn prefix(
 ) -> Vec<u32> {
     let mut ans = vec![];
     loop {
-        let pf = prefix_finder(n.clone(), &ntop(&n));
+        let pf = prefix_finder(n.clone(), &to_path(&n));
         ans = add(&ans, &pf);
         n = iterate(n, &pf);
         if n == BigUint::one() {
             return ans;
         } else {
-            n = 3.to_biguint().unwrap() * n + BigUint::one();
-            if ans.len() != 0 {
+            n.three_x_plus_one();
+            if ans.is_empty() {
                 ans.push(*ans.last().unwrap());
             }
         }
@@ -43,6 +45,7 @@ pub fn prefix(
 mod tests {
     use super::*;
     use crate::{collatz::ecf, piptree, riptree};
+    use num_bigint::ToBigUint;
 
     #[test]
     fn test_iteratives() {
@@ -73,25 +76,29 @@ mod tests {
             assert_eq!(
                 prefix(case.n.clone(), riptree::prefix_find),
                 case_ecf,
-                "ECF mismatch using Prefix + RIPTree"
+                "ECF mismatch using Prefix + RIPTree for {}",
+                case.n
             );
 
             assert_eq!(
                 prefix(case.n.clone(), piptree::prefix_find),
                 case_ecf,
-                "ECF mismatch using Prefix + PIPTree"
+                "ECF mismatch using Prefix + PIPTree for {}",
+                case.n
             );
 
             assert_eq!(
                 path_extension(case.n.clone(), riptree::prefix_find),
                 case_ecf,
-                "ECF mismatch using Path + RIPTree"
+                "ECF mismatch using Path + RIPTree for {}",
+                case.n
             );
 
             assert_eq!(
                 path_extension(case.n.clone(), piptree::prefix_find),
                 case_ecf,
-                "ECF mismatch using Path + PIPTree"
+                "ECF mismatch using Path + PIPTree {}",
+                case.n
             );
         }
     }

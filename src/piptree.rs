@@ -3,7 +3,7 @@ use num_traits::One;
 
 use crate::{
     prefix,
-    utils::{bton, is_pow2, pton},
+    utils::{from_binary, from_path, is_pow2},
 };
 
 /// Finds the nature of a path.
@@ -13,7 +13,7 @@ use crate::{
 #[inline]
 pub fn find_nature(p: &Vec<bool>, pf: &Vec<u32>, rpf: u32) -> bool {
     // check if the result of prefix iteration is even or odd
-    !(prefix::iterate(pton(p), &[pf.to_vec(), vec![rpf + 1]].concat()).bit(0))
+    !(prefix::iterate(from_path(p), &[pf.to_vec(), vec![rpf + 1]].concat()).bit(0))
 }
 
 /// Finds the path from root to the node indexed by p in PIPTree, with the path length of the root node being equal to |p|.
@@ -27,7 +27,7 @@ pub fn find_nature(p: &Vec<bool>, pf: &Vec<u32>, rpf: u32) -> bool {
 pub fn get_root_directions(p: &Vec<bool>) -> Vec<bool> {
     let mut ans = vec![];
 
-    let mut i = bton(p);
+    let mut i = from_binary(p);
     while i > BigUint::one() {
         if i.bit(0) {
             i -= BigUint::one();
@@ -39,21 +39,21 @@ pub fn get_root_directions(p: &Vec<bool>) -> Vec<bool> {
     }
 
     ans.reverse();
-    return ans;
+    ans
 }
 
 /// Finds the prefix of a number using PIPTree properties.
 pub fn prefix_find(n: BigUint, p: &Vec<bool>) -> Vec<u32> {
-    assert_eq!(pton(p), n, "Number must be at this path.");
+    assert_eq!(from_path(p), n, "Number must be at this path.");
 
     if is_pow2(&n) {
-        let mut nn = n.clone(); // TODO: can be removed?
+        let mut nn = n; // TODO: can be removed?
         let mut ans = 0;
         while nn > BigUint::one() {
             nn >>= 1;
             ans += 1;
         }
-        return vec![ans];
+        vec![ans]
     } else {
         let dirs = get_root_directions(p);
 
@@ -64,7 +64,7 @@ pub fn prefix_find(n: BigUint, p: &Vec<bool>) -> Vec<u32> {
         // start from the root and work your way to the target
         let mut cur_pf = vec![root_pf];
         let mut cur_n = root_n.clone();
-        let mut cur_p = root_p.clone();
+        let mut cur_p = root_p;
 
         for dir in dirs {
             // nature of current node
@@ -103,7 +103,7 @@ pub fn prefix_find(n: BigUint, p: &Vec<bool>) -> Vec<u32> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::utils::ntop;
+    use crate::utils::to_path;
     use num_bigint::ToBigUint;
 
     #[test]
@@ -154,7 +154,7 @@ mod tests {
             },
         ];
         for case in cases {
-            let pf = prefix_find(case.n.clone(), &ntop(&case.n));
+            let pf = prefix_find(case.n.clone(), &to_path(&case.n));
 
             assert_eq!(pf, case.pf, "Wrong prefix: {}", case.n);
             assert!(

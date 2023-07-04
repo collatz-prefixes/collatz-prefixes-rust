@@ -1,9 +1,7 @@
-#[path = "../src/common.rs"]
-mod common;
-use common::three_x_plus_one;
-
 use num_bigint::BigUint;
 use num_traits::{One, Zero};
+
+use crate::CollatzIteration;
 
 /// Returns the prefix of two numbers.
 ///
@@ -23,14 +21,14 @@ pub fn find(mut n: BigUint, mut m: BigUint) -> Vec<u32> {
         } else if n.bit(0) && m.bit(0) {
             // both are odd
             ans.push(twos);
-            n = three_x_plus_one(&n);
-            m = three_x_plus_one(&m);
+            n.three_x_plus_one();
+            m.three_x_plus_one();
         } else {
             break;
         }
     }
 
-    return ans;
+    ans
 }
 
 /// Iterates a number through a prefix.
@@ -38,18 +36,18 @@ pub fn find(mut n: BigUint, mut m: BigUint) -> Vec<u32> {
 /// If the prefix is equal to ECF of the number, the result is expected to be 1.
 pub fn iterate(mut n: BigUint, pf: &Vec<u32>) -> BigUint {
     if pf.is_empty() {
-        return n;
+        n
     } else {
         // R_0 function
         n /= BigUint::one() << pf[0];
 
         // R function for i = 1..len(pf)
         for i in 1..pf.len() {
-            n = three_x_plus_one(&n);
+            n.three_x_plus_one();
             n /= BigUint::one() << (pf[i] - pf[i - 1]);
         }
 
-        return n;
+        n
     }
 }
 
@@ -72,7 +70,7 @@ pub fn from_num(mut k: BigUint) -> Vec<u32> {
         bit_pos += 1;
     }
 
-    return ans;
+    ans
 }
 
 /// Add two prefixes. Does not mutate the input, returns a new vector.
@@ -80,10 +78,10 @@ pub fn from_num(mut k: BigUint) -> Vec<u32> {
 /// This is done by "attaching" prefixes together.
 ///
 ///```md
-///		pf1: [a, b, c]
-///		pf2:       [x,   y,   z]
-///	 +---------------------------
-///		sum: [a, b, x+c, y+c, z+c]
+///f1: [a, b, c]
+///pf2:       [x,   y,   z]
+///+-------------------------
+///sum: [a, b, x+c, y+c, z+c]
 ///```
 pub fn add(pf1: &Vec<u32>, pf2: &Vec<u32>) -> Vec<u32> {
     // edge cases
@@ -98,8 +96,9 @@ pub fn add(pf1: &Vec<u32>, pf2: &Vec<u32>) -> Vec<u32> {
 
     let mut ans = pf1.to_owned();
     ans[pf1.len() - 1] += pf2[0];
-    for i in 1..pf2.len() {
-        ans.push(pf2[i] + last);
+
+    for pf2_i in pf2.iter().skip(1) {
+        ans.push(pf2_i + last);
     }
 
     ans

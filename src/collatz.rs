@@ -1,18 +1,7 @@
-#[path = "../src/common.rs"]
-mod common;
-use common::three_x_plus_one;
-
 use num_bigint::{BigUint, ToBigUint};
 use num_traits::One;
 
-// trait Three {
-//     fn three(&self) -> BigUint;
-// }
-// impl Three for BigUint {
-//     fn three(&self) -> BigUint {
-//         3.to_biguint().unwrap()
-//     }
-// }
+use crate::CollatzIteration;
 
 /// Collatz length is the number of iterations it takes to reach n to 1.
 pub fn length(mut n: BigUint) -> usize {
@@ -21,13 +10,13 @@ pub fn length(mut n: BigUint) -> usize {
     while n != BigUint::one() {
         ans += 1;
         if n.bit(0) {
-            n = three_x_plus_one(&n)
+            n.three_x_plus_one();
         } else {
             n >>= 1;
         }
     }
 
-    return ans + 1;
+    ans + 1
 }
 
 /// Collatz Sequence is the array of numbers seen during iterations until 1 is reached.
@@ -37,14 +26,15 @@ pub fn sequence(mut n: BigUint) -> Vec<BigUint> {
     while n != BigUint::one() {
         ans.push(n.clone());
         if n.bit(0) {
-            n = three_x_plus_one(&n)
+            n.three_x_plus_one();
         } else {
             n >>= 1;
         }
     }
-    ans.push(n.clone());
 
-    return ans;
+    ans.push(BigUint::one());
+
+    ans
 }
 
 /// Reduced Collatz Sequence is the array of odd numbers seen during iterations until 1 is reached.
@@ -59,14 +49,15 @@ pub fn reduced_sequence(mut n: BigUint) -> Vec<BigUint> {
     while n != BigUint::one() {
         if n.bit(0) {
             ans.push(n.clone());
-            n = three_x_plus_one(&n);
+            n.three_x_plus_one();
         } else {
             n >>= 1;
         }
     }
-    ans.push(n.clone());
 
-    return ans;
+    ans.push(BigUint::one());
+
+    ans
 }
 
 /// Find ECF (Exponential Canonical Form) of a number.
@@ -77,15 +68,16 @@ pub fn ecf(mut n: BigUint) -> Vec<u32> {
     while n != BigUint::one() {
         if n.bit(0) {
             ans.push(twos);
-            n = three_x_plus_one(&n);
+            n += (n.clone() << 1) + BigUint::one();
         } else {
             twos += 1;
             n >>= 1;
         }
     }
+
     ans.push(twos);
 
-    return ans;
+    ans
 }
 
 /// Compute a number from it's ECF.
@@ -97,7 +89,7 @@ pub fn ecf_to_n(ecf: Vec<u32>) -> BigUint {
         ans = (ans - BigUint::one()) / 3.to_biguint().unwrap();
     }
 
-    return ans << ecf[0];
+    ans << ecf[0]
 }
 
 #[cfg(test)]

@@ -3,7 +3,7 @@ use num_traits::One;
 
 use crate::{
     prefix,
-    utils::{is_pow2, pton},
+    utils::{from_path, is_pow2},
 };
 
 /// Finds the next number that resides at the path of `n`.
@@ -18,7 +18,7 @@ pub fn next_in_path(n: BigUint, p: &Vec<bool>) -> BigUint {
 //
 // If you only care about the number, simply pass NTOP(n) as the path.
 pub fn prefix_find(mut n: BigUint, p: &Vec<bool>) -> Vec<u32> {
-    assert_eq!(pton(p), n, "Number must be at this path.");
+    assert_eq!(from_path(p), n, "Number must be at this path.");
 
     if is_pow2(&n) {
         let mut ans = 0;
@@ -35,7 +35,7 @@ pub fn prefix_find(mut n: BigUint, p: &Vec<bool>) -> Vec<u32> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::utils::ntop;
+    use crate::utils::to_path;
     use num_bigint::ToBigUint;
 
     #[test]
@@ -86,7 +86,7 @@ mod tests {
             },
         ];
         for case in cases {
-            let pf = prefix_find(case.n.clone(), &ntop(&case.n));
+            let pf = prefix_find(case.n.clone(), &to_path(&case.n));
 
             assert_eq!(pf, case.pf, "Wrong prefix.");
             assert!(
@@ -126,7 +126,7 @@ mod tests {
         ];
         for case in cases {
             assert_eq!(
-                next_in_path(case.n.clone(), &ntop(&case.n)),
+                next_in_path(case.n.clone(), &to_path(&case.n)),
                 case.k,
                 "Wrong number at next in path."
             );

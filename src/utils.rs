@@ -8,8 +8,8 @@ use num_traits::{One, Zero};
 /// 3. Reverse array
 /// 4. Flip bits
 #[inline]
-pub fn ntop(n: &BigUint) -> Vec<bool> {
-    ntob(&(n.clone() - BigUint::one()))
+pub fn to_path(n: &BigUint) -> Vec<bool> {
+    to_binary(&(n.clone() - BigUint::one()))
         .iter()
         .rev()
         .map(|b| !b)
@@ -23,14 +23,14 @@ pub fn ntop(n: &BigUint) -> Vec<bool> {
 /// 3. Convert to decimal
 /// 4. Increment
 #[inline]
-pub fn pton(p: &Vec<bool>) -> BigUint {
-    bton(&p.into_iter().map(|b| !b).rev().collect()) + BigUint::one()
+pub fn from_path(p: &Vec<bool>) -> BigUint {
+    from_binary(&p.iter().map(|b| !b).rev().collect()) + BigUint::one()
 }
 
 /// Given a binary representation in bools, compute the corresponding number.
-pub fn bton(b: &Vec<bool>) -> BigUint {
+pub fn from_binary(b: &Vec<bool>) -> BigUint {
     BigUint::from_radix_be(
-        b.into_iter()
+        b.iter()
             .map(|b| if *b { 1 } else { 0 })
             .collect::<Vec<u8>>()
             .as_slice(),
@@ -46,7 +46,7 @@ pub fn bton(b: &Vec<bool>) -> BigUint {
 ///
 /// - `0` corresponds to `false`
 /// - `1` corresponds to `true`
-pub fn ntob(n: &BigUint) -> Vec<bool> {
+pub fn to_binary(n: &BigUint) -> Vec<bool> {
     if *n == BigUint::zero() {
         vec![]
     } else {
@@ -86,8 +86,8 @@ mod tests {
             },
         ];
         for case in cases {
-            assert_eq!(ntop(&case.n), case.p, "Wrong path from number.");
-            assert_eq!(pton(&case.p), case.n, "Wrong number from path.");
+            assert_eq!(to_path(&case.n), case.p, "Wrong path from number.");
+            assert_eq!(from_path(&case.p), case.n, "Wrong number from path.");
         }
     }
 
@@ -117,8 +117,8 @@ mod tests {
             },
         ];
         for case in cases {
-            assert_eq!(ntob(&case.n), case.b, "Wrong binary from number.");
-            assert_eq!(bton(&case.b), case.n, "Wrong number from binary.");
+            assert_eq!(to_binary(&case.n), case.b, "Wrong binary from number.");
+            assert_eq!(from_binary(&case.b), case.n, "Wrong number from binary.");
         }
     }
 
