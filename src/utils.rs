@@ -7,6 +7,7 @@ use num_traits::{One, Zero};
 /// 2. Convert to binary array
 /// 3. Reverse array
 /// 4. Flip bits
+#[inline]
 pub fn ntop(n: BigUint) -> Vec<bool> {
     ntob(n - BigUint::one()).iter().rev().map(|b| !b).collect()
 }
@@ -17,6 +18,7 @@ pub fn ntop(n: BigUint) -> Vec<bool> {
 /// 2. Reverse array
 /// 3. Convert to decimal
 /// 4. Increment
+#[inline]
 pub fn pton(p: Vec<bool>) -> BigUint {
     bton(p.into_iter().map(|b| !b).rev().collect()) + BigUint::one()
 }
