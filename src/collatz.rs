@@ -16,7 +16,7 @@ pub fn length(mut n: BigUint) -> usize {
         }
     }
 
-    ans + 1
+    ans
 }
 
 /// Collatz Sequence is the array of numbers seen during iterations until 1 is reached.
@@ -159,7 +159,7 @@ mod tests {
             assert_eq!(sequence(case.n.clone()), case.seq, "Wrong sequence.");
             assert_eq!(
                 length(case.n.clone()),
-                case.seq.len(),
+                case.seq.len() - 1,
                 "Wrong sequence length."
             );
             assert_eq!(
